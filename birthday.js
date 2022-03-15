@@ -18,7 +18,7 @@ function cb(error, response, html) {
 function handleHTML(html) {
   let $ = cheerio.load(html);
   let inningArr = $(".card.content-block.match-scorecard-table>.Collapsible");
-  let htmlStr = "";
+
   for (let i = 0; i < inningArr.length; i++) {
     //team Name
     let teamNameElem = $(inningArr[i]).find(".header-title.label");
@@ -36,10 +36,34 @@ function handleHTML(html) {
       let allColsOfPlayer = $(allBatMan[j]).find("td");
       let isbatsManCal = $(allColsOfPlayer[0]).hasClass("batsman-cell");
       if (isbatsManCal == true) {
-        // getting player name
         let playerName = $(allColsOfPlayer[0]).text();
-        console.log(`Winning Team ${teamName}  playerName:${playerName}`);
+        // getting player profile like
+        let href = $(allColsOfPlayer[0]).find("a").attr("href");
+        let fullLink = "https://www.espncricinfo.com" + href;
+        // console.log(`Winning Team ${teamName}  playerName:${playerName}`);
+        // console.log(fullLink);
+
+        getBirthdayPage(fullLink, playerName, teamName);
       }
     }
   }
+}
+
+function getBirthdayPage(url, name, teamName) {
+  request(url, cb);
+  function cb(error, response, html) {
+    if (error) {
+      console.error("error:", error); // Print the error if one occurred
+    } else {
+      extractBirthday(html, name, teamName);
+      // console.log(html);
+    }
+  }
+}
+
+function extractBirthday(html, name, teamName) {
+  let $ = cheerio.load(html);
+  let detailsArr = $(".player-card-description");
+  let birthDay = $(detailsArr[1]).text();
+  console.log(`${name} plays for ${teamName} was born on ${birthDay}`);
 }
