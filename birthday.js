@@ -1,6 +1,5 @@
 const request = require("request");
 const cheerio = require("cheerio");
-const { table } = require("console");
 
 request(
   "https://www.espncricinfo.com/series/ipl-2020-21-1210595/chennai-super-kings-vs-kings-xi-punjab-53rd-match-1216506/full-scorecard",
@@ -31,14 +30,16 @@ function handleHTML(html) {
     //table batman
     let tableElement = $(inningArr[i]).find(".table.batsman");
     //getting all bowlers rows
-    let allBowlers = $(tableElement).find("tr");
-    for (let j = 0; j < allBowlers.length; j++) {
+    let allBatMan = $(tableElement).find("tr");
+    for (let j = 0; j < allBatMan.length; j++) {
       //getting palyers record in a row through column
-      let allColsOfPlayer = $(allBowlers[j]).find("td");
-      //getting player name
-      let playerName = $(allColsOfPlayer[0]).text();
-
-      console.log(`Winning Team ${teamName}  playerName:${playerName}`);
+      let allColsOfPlayer = $(allBatMan[j]).find("td");
+      let isbatsManCal = $(allColsOfPlayer[0]).hasClass("batsman-cell");
+      if (isbatsManCal == true) {
+        // getting player name
+        let playerName = $(allColsOfPlayer[0]).text();
+        console.log(`Winning Team ${teamName}  playerName:${playerName}`);
+      }
     }
   }
 }
